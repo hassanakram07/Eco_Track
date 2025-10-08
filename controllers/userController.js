@@ -5,7 +5,7 @@ const { generateToken } = require("../utils/generateToken");
 
 exports.registerUser = async (req, res) => {
   try {
-    let {
+    const {
       firstName,
       lastName,
       email,
@@ -18,7 +18,7 @@ exports.registerUser = async (req, res) => {
       postalCode,
     } = req.body;
 
-    let userExist = await userModel.findOne({ email });
+    const userExist = await userModel.findOne({ email });
     if (userExist)
       return res
         .status(400)
@@ -28,7 +28,7 @@ exports.registerUser = async (req, res) => {
       bcrypt.hash(password, salt, async (err, hash) => {
         if (err) return res.send(err.message);
         else {
-          let user = await userModel.create({
+          const user = await userModel.create({
             firstName,
             lastName,
             email,

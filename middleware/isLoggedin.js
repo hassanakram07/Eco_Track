@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const userModel = require("../models/user-model");
 
-module.exports = async (req, res, next) => {
+const isLoggedin = async (req, res, next) => {
   try {
     const token = req.cookie?.token;
     if (!token) {
@@ -27,3 +27,5 @@ module.exports = async (req, res, next) => {
       .json({ success: false, message: "Invalid or expired token" });
   }
 };
+
+module.exports = { isLoggedin } 
