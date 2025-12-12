@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const {isLoggedin }= require("../middleware/isLoggedin")
-const {authorizeRoles} = require("../middleware/authorizeRoles");
+const { isLoggedin } = require("../middleware/isLoggedin");
+const { authorizeRoles } = require("../middleware/authorizeRoles");
 const {
   createpickupRequest,
   getMyPickups,
@@ -19,7 +19,7 @@ router.post(
 );
 router.get("/my", isLoggedin, authorizeRoles("Customer"), getMyPickups);
 
-router.get("/", isLoggedin, authorizeRoles("Admin" , "Manager"), getAllPickups);
+router.get("/", isLoggedin, authorizeRoles("Admin", "Manager"), getAllPickups);
 router.put("/assign/:id", isLoggedin, authorizeRoles("Admin"), assignCollector);
 
 router.put(
@@ -30,3 +30,5 @@ router.put(
 );
 
 module.exports = router;
+
+

@@ -59,24 +59,37 @@ exports.getAllPickups = async (req, res) => {
 
 exports.assignCollector = async (req, res) => {
   try {
+    const { id } = req.params; 
+    const { collectorId } = req.body; 
+
     const pickup = await pickupRequestModel.findByIdAndUpdate(
       id,
       { assignedCollector: collectorId, status: "Assigned" },
       { new: true }
     );
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Collector assigned successfully",
-        data: pickups,
+
+    if (!pickup) {
+      return res.status(404).json({
+        success: false,
+        message: "Pickup request not found",
       });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Collector assigned successfully",
+      data: pickup,
+    });
   } catch (err) {
-    res.status(500).json({ success: true, message: err.message });
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
-exports.updatePickupStatus = async (req, res) => {
+
+exports.updatePickupStatus = async (req, res) => {          
   try {
     const { id } = req.params;
     const { status, collectedWeight, notes } = req.body;

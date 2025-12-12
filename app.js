@@ -7,10 +7,12 @@ app.use(cookieParser());
 const db = require("./config/mongoose-connection");
 const userRoute = require("./routes/userRoute");
 const pickupRoute = require("./routes/pickupRoute");
+const inventoryRoute = require("./routes/inventoryRoute")
 require("dotenv").config();
 
 app.use("/api/user", userRoute);
 app.use("/api/pickups", pickupRoute);
+app.use("/api/inventory",inventoryRoute)
 
 app.listen(3000),
   () => {
