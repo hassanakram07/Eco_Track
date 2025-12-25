@@ -1,6 +1,8 @@
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const app = express();
+const cors = require("cors");
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -8,13 +10,96 @@ const db = require("./config/mongoose-connection");
 const userRoute = require("./routes/userRoute");
 const pickupRoute = require("./routes/pickupRoute");
 const inventoryRoute = require("./routes/inventoryRoute")
+const brandRoute = require("./routes/brandRoute");
+const activityRoute = require("./routes/activityLogRoute");
+const adminRoute = require("./routes/adminRoute");
+const collectionPointRoute = require("./routes/collectionPointRoute");
+const couponRoute = require("./routes/couponRoute");
+const discountRoute = require("./routes/discountRoute");
+const performanceRoute = require("./routes/performanceRoute");
+const expenseRoute = require("./routes/expenseRoute");
+const feedbackRoute = require("./routes/feedbackRoute");
+const fleetRoute = require("./routes/fleetRoute");
+const maintenanceRoute = require("./routes/fleetMaintenanceRoute");
+const fleetReportRoute = require("./routes/fleetReportRoute");
+const inventoryTransactionRoute = require("./routes/inventoryTransactionRoute");
+const invoiceRoute = require("./routes/invoiceRoute");
+const invoiceItemRoute = require("./routes/invoiceItemRoute");
+const materialRoute = require("./routes/materialRoute");
+const materialCategoryRoute = require("./routes/materialCategoryRoute");
+const messageRoute = require("./routes/messageRoute");
+const notificationRoute = require("./routes/notificationRoute");
+const orderRoute = require("./routes/orderRoute");
+const orderItemRoute = require("./routes/orderItemRoute");
+const paymentRoute = require("./routes/paymentRoute");
+const paymentMethodRoute = require("./routes/paymentMethodRoute");
+const permissionRoute = require("./routes/permissionRoute");
+const productCategoryRoute = require("./routes/productCategoryRoute");
+const ratingRoute = require("./routes/ratingRoute");
+const statRoute = require("./routes/statRoute");
+const refundRoute = require("./routes/refundRoute");
+const requestRoute = require("./routes/requestRoute");
+const historyRoute = require("./routes/statusHistoryRoute");
+const revenueRoute = require("./routes/revenueRoute");
+const roleRoute = require("./routes/roleRoute");
+const routeRoute = require("./routes/routeRoute");
+const salaryRoute = require("./routes/salaryRoute");
+const reportRoute = require("./routes/reportRoute");
+const scheduleRoute = require("./routes/scheduleRoute");
+const sessionRoute = require("./routes/sessionRoute");
+const subscriptionRoute = require("./routes/subscriptionRoute");
+const supplierRoute = require("./routes/supplierRoute");
+const ticketRoute = require("./routes/ticketRoute");
+const logRoute = require("./routes/logRoute");
+const sectionRoute = require("./routes/sectionRoute");
 require("dotenv").config();
-
-app.use("/api/user", userRoute);
+app.use("/api/auth", userRoute);
 app.use("/api/pickups", pickupRoute);
-app.use("/api/inventory",inventoryRoute)
+app.use("/api/inventory", inventoryRoute)
+app.use("/api/brands", brandRoute);
+app.use("/api/logs", activityRoute);
+app.use("/api/admins", adminRoute);
+app.use("/api/collection-points", collectionPointRoute);
+app.use("/api/coupons", couponRoute);
+app.use("/api/discounts", discountRoute);
+app.use("/api/performance", performanceRoute);
+app.use("/api/expenses", expenseRoute);
+app.use("/api/feedback", feedbackRoute);
+app.use("/api/fleet", fleetRoute);
+app.use("/api/fleet-maintenance", maintenanceRoute);
+app.use("/api/fleet-reports", fleetReportRoute);
+app.use("/api/inventory-transactions", inventoryTransactionRoute);
+app.use("/api/invoices", invoiceRoute);
+app.use("/api/invoice-items", invoiceItemRoute);
+app.use("/api/materials", materialRoute);
+app.use("/api/material-categories", materialCategoryRoute);
+app.use("/api/messages", messageRoute);
+app.use("/api/notifications", notificationRoute);
+app.use("/api/orders", orderRoute);
+app.use("/api/order-items", orderItemRoute);
+app.use("/api/payments", paymentRoute);
+app.use("/api/payment-methods", paymentMethodRoute);
+app.use("/api/permissions", permissionRoute);
+app.use("/api/product-categories", productCategoryRoute);
+app.use("/api/ratings", ratingRoute);
+app.use("/api/stats", statRoute);
+app.use("/api/refunds", refundRoute);
+app.use("/api/requests", requestRoute);
+app.use("/api/request-history", historyRoute);
+app.use("/api/revenue", revenueRoute);
+app.use("/api/roles", roleRoute);
+app.use("/api/routes", routeRoute);
+app.use("/api/salaries", salaryRoute);
+app.use("/api/reports", reportRoute);
+app.use("/api/schedules", scheduleRoute);
+app.use("/api/sessions", sessionRoute);
+app.use("/api/subscriptions", subscriptionRoute);
+app.use("/api/suppliers", supplierRoute);
+app.use("/api/tickets", ticketRoute);
+app.use("/api/system-logs", logRoute);
+app.use("/api/sections", sectionRoute);
 
-app.listen(3000),
-  () => {
-    console.log("Server Is Running On Port 3000");
-  };
+// Isay file ke bilkul aakhir mein replace karein
+app.listen(4005, () => {
+  console.log("Server Is Running On Port 4005");
+});

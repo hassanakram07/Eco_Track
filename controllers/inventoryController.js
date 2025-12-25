@@ -2,45 +2,57 @@ const inventoryModel = require("../models/inventory-model");
 const { findByIdAndDelete } = require("../models/pickupRequest-model");
 const productModel = require("../models/product-model");
 const warehouseModel = require("../models/warehouse-model");
+const { createLog } = require("./logController");
 
 exports.addInventory = async (req, res) => {
   try {
     const {
       productId,
+      material, // From frontend text
       batchNumber,
       warehouseId,
+      location, // From frontend text
       quantity,
       minLevel,
       maxLevel,
       metadata,
     } = req.body;
 
-    const product = await productModel.findById(productId);
-    const warehouse = await warehouseModel.findById(warehouseId);
+    // Optional: Try to resolve IDs if provided, but don't error if missing
+    let resolvedProduct = null;
+    let resolvedWarehouse = null;
 
-    if (!product || !warehouse) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Product Or Warehouse Not Found" });
+    if (productId) {
+      resolvedProduct = await productModel.findById(productId);
+    }
+    if (warehouseId) {
+      resolvedWarehouse = await warehouseModel.findById(warehouseId);
     }
 
     const inventory = await inventoryModel.create({
-      productId,
+      productId: resolvedProduct ? productId : undefined,
+      materialName: material || (resolvedProduct ? resolvedProduct.name : "Unknown Material"),
+      warehouseId: resolvedWarehouse ? warehouseId : undefined,
+      location: location || (resolvedWarehouse ? resolvedWarehouse.name : "Unknown Location"),
       batchNumber,
-      warehouseId,
       quantity,
       minLevel,
       maxLevel,
       metadata,
-      lastUpdatedBy: req.user._id,
+      lastUpdatedBy: req.user ? req.user._id : undefined,
     });
 
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: "Inventory record added successfully",
       data: inventory,
     });
   } catch (err) {
+    await createLog("ERROR", err.message, "Inventory Module", {
+      stack: err.stack,
+      inputData: req.body,
+      user: req.user ? req.user._id : "Guest"
+    });
     res.status(400).json({ success: false, message: err.message });
   }
 };
@@ -62,6 +74,11 @@ exports.updateInventory = async (req, res) => {
     inventory.lastUpdatedBy = req.user._id;
     await inventory.save();
   } catch (err) {
+    await createLog("ERROR", err.message, "Inventory Module", {
+      stack: err.stack,
+      inputData: req.body,
+      user: req.user ? req.user._id : "Guest"
+    });
     res.status(400).json({ success: false, message: err.message });
   }
 };
@@ -80,6 +97,32 @@ exports.deleteInventory = async (req, res) => {
         .json({ success: true, message: "Inventory Deleted Successfully" });
     }
   } catch (err) {
+    await createLog("ERROR", err.message, "Inventory Module", {
+      stack: err.stack,
+      inputData: req.body,
+      user: req.user ? req.user._id : "Guest"
+    });
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.getInventory = async (req, res) => {
+  try {
+    const inventory = await inventoryModel
+      .find()
+      .populate("productId", "name category") // Assuming product has name and category
+      .populate("warehouseId", "name code"); // Assuming warehouse has name and code
+
+    res.status(200).json({
+      success: true,
+      count: inventory.length,
+      data: inventory,
+    });
+  } catch (err) {
+    await createLog("ERROR", err.message, "Inventory Module", {
+      stack: err.stack,
+      user: req.user ? req.user._id : "Guest",
+    });
     res.status(500).json({ success: false, message: err.message });
   }
 };

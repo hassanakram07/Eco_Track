@@ -1,10 +1,17 @@
-const Supplier = require("../models/supplier-model");
+const supplierModel = require("../models/supplier-model");
+const { createLog } = require("../controllers/logController");
 
-// ADD SUPPLIER
-exports.addSupplier = async (req, res) => {
+
+// ✅ 1. CREATE SUPPLIER
+exports.createSupplier = async (req, res) => {
   try {
-    const {
-      supplierCode,
+    const { supplierCode, name, contactPerson, contactPhone, email, address, city, country, paymentTerms, notes } = req.body;
+
+    const exist = await supplierModel.findOne({ supplierCode: supplierCode.toUpperCase() });
+    if (exist) return res.status(400).json({ success: false, message: "Supplier code already exists" });
+
+    const supplier = await supplierModel.create({
+      supplierCode: supplierCode.toUpperCase(),
       name,
       contactPerson,
       contactPhone,
@@ -13,121 +20,69 @@ exports.addSupplier = async (req, res) => {
       city,
       country,
       paymentTerms,
-      notes,
-    } = req.body;
-
-    if (!name) {
-      return res.status(400).json({
-        success: false,
-        message: "Supplier name is required",
-      });
-    }
-
-    const supplier = await Supplier.create({
-      supplierCode,
-      name,
-      contactPerson,
-      contactPhone,
-      email,
-      address,
-      city,
-      country,
-      paymentTerms,
-      notes,
+      notes
     });
 
-    res.status(201).json({
-      success: true,
-      message: "Supplier added successfully",
-      data: supplier,
+    res.status(201).json({ success: true, message: "Supplier added successfully", data: supplier });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Supplier Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// GET ALL SUPPLIERS
+// ✅ 2. GET ALL SUPPLIERS
 exports.getAllSuppliers = async (req, res) => {
   try {
-    const suppliers = await Supplier.find();
-
-    res.status(200).json({
-      success: true,
-      count: suppliers.length,
-      data: suppliers,
+    const suppliers = await supplierModel.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, count: suppliers.length, data: suppliers });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Supplier Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// GET SUPPLIER BY ID
-exports.getSupplierById = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const supplier = await Supplier.findById(id);
-    if (!supplier) {
-      return res.status(404).json({
-        success: false,
-        message: "Supplier not found",
-      });
-    }
-
-    res.status(200).json({ success: true, data: supplier });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// UPDATE SUPPLIER
+// ✅ 3. UPDATE SUPPLIER
 exports.updateSupplier = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const supplier = await Supplier.findByIdAndUpdate(
-      id,
+    const supplier = await supplierModel.findByIdAndUpdate(
+      req.params.id,
       req.body,
       { new: true }
     );
+    if (!supplier) return res.status(404).json({ success: false, message: "Supplier not found" });
 
-    if (!supplier) {
-      return res.status(404).json({
-        success: false,
-        message: "Supplier not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Supplier updated successfully",
-      data: supplier,
+    res.status(200).json({ success: true, message: "Supplier updated", data: supplier });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Supplier Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// DELETE SUPPLIER
+// ✅ 4. DELETE SUPPLIER
 exports.deleteSupplier = async (req, res) => {
   try {
-    const { id } = req.params;
+    const supplier = await supplierModel.findByIdAndDelete(req.params.id);
+    if (!supplier) return res.status(404).json({ success: false, message: "Supplier not found" });
 
-    const supplier = await Supplier.findById(id);
-    if (!supplier) {
-      return res.status(404).json({
-        success: false,
-        message: "Supplier not found",
-      });
-    }
-
-    await supplier.deleteOne();
-
-    res.status(200).json({
-      success: true,
-      message: "Supplier deleted successfully",
+    res.status(200).json({ success: true, message: "Supplier deleted successfully" });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Supplier Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };

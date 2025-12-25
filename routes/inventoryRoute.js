@@ -5,8 +5,8 @@ const {
   updateInventory,
   deleteInventory,
 } = require("../controllers/inventoryController");
-const{ isLoggedin} = require("../middleware/isLoggedin");
-const {authorizeRoles} = require("../middleware/authorizeRoles");
+const { isLoggedin } = require("../middleware/isLoggedin");
+const { authorizeRoles } = require("../middleware/authorizeRoles");
 
 router.post(
   "/add",
@@ -26,4 +26,18 @@ router.delete(
   authorizeRoles("Admin", "Manager"),
   deleteInventory
 );
+
+router.get(
+  "/",
+  isLoggedin,
+  // Accessible by all authenticated staff
+  // authorizeRoles("Admin", "Manager", "Staff"), 
+  function (req, res, next) {
+    // Temporary: Allow all roles to verify dashboard. 
+    // Ideally should check roles but 'isLoggedin' is enough for dashboard
+    next();
+  },
+  require("../controllers/inventoryController").getInventory
+);
+
 module.exports = router;

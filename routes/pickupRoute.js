@@ -14,13 +14,13 @@ const {
 router.post(
   "/create",
   isLoggedin,
-  authorizeRoles("Customer"),
+  authorizeRoles("Customer", "Admin", "Manager"),
   createpickupRequest
 );
 router.get("/my", isLoggedin, authorizeRoles("Customer"), getMyPickups);
 
 router.get("/", isLoggedin, authorizeRoles("Admin", "Manager"), getAllPickups);
-router.put("/assign/:id", isLoggedin, authorizeRoles("Admin"), assignCollector);
+router.patch("/assign/:id", isLoggedin, authorizeRoles("Admin"), assignCollector);
 
 router.put(
   "/status/:id",

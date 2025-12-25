@@ -1,6 +1,7 @@
 const User = require("../models/user-model");
+const { createLog } = require("./logController");
 
-// CREATE EMPLOYEE (Admin only)
+
 exports.createEmployee = async (req, res) => {
   try {
     const { firstName, lastName, email, password, role, phone, gender } = req.body;
@@ -12,7 +13,7 @@ exports.createEmployee = async (req, res) => {
       });
     }
 
-    // Check existing user
+   
     const isExist = await User.findOne({ email });
     if (isExist) {
       return res.status(400).json({
@@ -37,12 +38,17 @@ exports.createEmployee = async (req, res) => {
       message: "Employee created successfully",
       data: employee,
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+   } catch (err) {
+    await createLog("ERROR", err.message, "Employee Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// GET ALL EMPLOYEES
+
 exports.getAllEmployees = async (req, res) => {
   try {
     const employees = await User.find().select("-password");
@@ -52,12 +58,17 @@ exports.getAllEmployees = async (req, res) => {
       count: employees.length,
       data: employees,
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+  } catch (err) {
+    await createLog("ERROR", err.message, "Employee Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// GET SINGLE EMPLOYEE BY ID
+
 exports.getEmployeeById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -71,17 +82,22 @@ exports.getEmployeeById = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: employee });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+  } catch (err) {
+    await createLog("ERROR", err.message, "Employee Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// UPDATE EMPLOYEE
+
 exports.updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Prevent role modification by Staff
+
     if (req.body.role && req.user.role !== "Admin") {
       return res.status(403).json({
         success: false,
@@ -107,12 +123,17 @@ exports.updateEmployee = async (req, res) => {
       message: "Employee updated successfully",
       data: employee,
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Employee Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// DELETE EMPLOYEE
+
 exports.deleteEmployee = async (req, res) => {
   try {
     const { id } = req.params;
@@ -126,7 +147,7 @@ exports.deleteEmployee = async (req, res) => {
       });
     }
 
-    // Prevent deleting Admin
+   
     if (employee.role === "Admin") {
       return res.status(403).json({
         success: false,
@@ -140,7 +161,12 @@ exports.deleteEmployee = async (req, res) => {
       success: true,
       message: "Employee deleted successfully",
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Employee Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };

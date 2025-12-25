@@ -3,15 +3,22 @@ const mongoose = require("mongoose");
 const pickupRequestSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
     required: true,
   },
-  materialType: {
+  // User requested 'customerName', adding as string fallback/alias
+  customerName: { type: String },
+
+  materialType: { // Used by frontend (aka wasteType)
     type: String,
     required: true,
     enum: ["Plastic", "Paper", "Glass", "Metal", "E-Waste", "Other"],
   },
-  quantity: { type: Number, required: true },
+  wasteType: { type: String }, // specific request
+
+  quantity: { type: Number, required: true }, // Used by frontend (aka estimatedWeight)
+  estimatedWeight: { type: Number }, // specific request
+
   unit: { type: String, default: "kg" },
   pickupAddress: { type: String, required: true },
   preferredDate: { type: Date, required: true },
@@ -20,12 +27,18 @@ const pickupRequestSchema = new mongoose.Schema({
     enum: ["Pending", "Assigned", "In Progress", "Completed", "Cancelled"],
     default: "Pending",
   },
-  assignedCollector: {
+  assignedCollector: { // Used by frontend
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
   },
+  assignedDriver: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // specific request
+
+  // Loose coupling fields
+  assignedDriverName: { type: String },
+  assignedVehicleId: { type: String },
+
   collectedWeight: { type: Number },
-  photo: { type: String }, // Optional proof photo
+  photo: { type: String },
   notes: { type: String },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

@@ -2,6 +2,8 @@ const Product = require("../models/product-model");
 const Brand = require("../models/brand-model");
 const Category = require("../models/productCategory-model");
 const Supplier = require("../models/supplier-model");
+const { createLog } = require("../controllers/logController");
+
 
 // ADD PRODUCT
 exports.addProduct = async (req, res) => {
@@ -71,8 +73,13 @@ exports.addProduct = async (req, res) => {
       message: "Product created successfully",
       data: product,
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Product Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -89,8 +96,13 @@ exports.getAllProducts = async (req, res) => {
       count: products.length,
       data: products,
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Product Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -109,8 +121,13 @@ exports.getProductById = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: product });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Product Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -139,8 +156,13 @@ exports.updateProduct = async (req, res) => {
       message: "Product updated successfully",
       data: product,
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+   } catch (err) {
+    await createLog("ERROR", err.message, "Product Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -161,7 +183,12 @@ exports.deleteProduct = async (req, res) => {
       success: true,
       message: "Product deleted successfully",
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    } catch (err) {
+    await createLog("ERROR", err.message, "Product Module", { 
+      stack: err.stack, 
+      inputData: req.body, 
+      user: req.user ? req.user._id : "Guest" 
+    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
