@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const feedbackSchema = mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   requestId: { type: mongoose.Schema.Types.ObjectId, ref: "request" },
   productId: { type: mongoose.Schema.Types.ObjectId, ref: "product" },
   rating: { type: Number, min: 1, max: 5 },

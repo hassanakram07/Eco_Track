@@ -9,10 +9,13 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 
-router.post("/add", addProduct);
+const { isLoggedin } = require("../middleware/isLoggedin");
+const { authorizeRoles } = require("../middleware/authorizeRoles");
+
+router.post("/add", isLoggedin, authorizeRoles("Admin", "Manager"), addProduct);
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
-router.put("/:id", updateProduct);
-router.delete("/:id", deleteProduct);
+router.put("/:id", isLoggedin, authorizeRoles("Admin", "Manager"), updateProduct);
+router.delete("/:id", isLoggedin, authorizeRoles("Admin"), deleteProduct);
 
 module.exports = router;

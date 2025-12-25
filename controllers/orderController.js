@@ -6,9 +6,9 @@ const { createLog } = require("../controllers/logController");
 // ✅ 1. Naya Order Place Karna (Customer Only)
 exports.placeOrder = async (req, res) => {
   try {
-    const { 
-      orderNumber, shippingAddress, billingAddress, 
-      totalAmount, shippingMethod, notes 
+    const {
+      orderNumber, shippingAddress, billingAddress,
+      totalAmount, shippingMethod, notes
     } = req.body;
 
     const order = await orderModel.create({
@@ -29,11 +29,11 @@ exports.placeOrder = async (req, res) => {
       message: "Order placed successfully",
       data: order
     });
-    } catch (err) {
-    await createLog("ERROR", err.message, "Order Module", { 
-      stack: err.stack, 
-      inputData: req.body, 
-      user: req.user ? req.user._id : "Guest" 
+  } catch (err) {
+    await createLog("ERROR", err.message, "Order Module", {
+      stack: err.stack,
+      inputData: req.body,
+      user: req.user ? req.user._id : "Guest"
     });
     res.status(500).json({ success: false, message: err.message });
   }
@@ -60,11 +60,11 @@ exports.updateOrderStatus = async (req, res) => {
     await sendNotification(order.customerId, "Order Status Update", `Your order is now ${status}`, "info");
 
     res.status(200).json({ success: true, message: `Order marked as ${status}`, data: order });
-    } catch (err) {
-    await createLog("ERROR", err.message, "Order Module", { 
-      stack: err.stack, 
-      inputData: req.body, 
-      user: req.user ? req.user._id : "Guest" 
+  } catch (err) {
+    await createLog("ERROR", err.message, "Order Module", {
+      stack: err.stack,
+      inputData: req.body,
+      user: req.user ? req.user._id : "Guest"
     });
     res.status(500).json({ success: false, message: err.message });
   }
@@ -75,11 +75,11 @@ exports.getMyOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({ customerId: req.user._id }).sort({ placedAt: -1 });
     res.status(200).json({ success: true, count: orders.length, data: orders });
-   } catch (err) {
-    await createLog("ERROR", err.message, "Order Module", { 
-      stack: err.stack, 
-      inputData: req.body, 
-      user: req.user ? req.user._id : "Guest" 
+  } catch (err) {
+    await createLog("ERROR", err.message, "Order Module", {
+      stack: err.stack,
+      inputData: req.body,
+      user: req.user ? req.user._id : "Guest"
     });
     res.status(500).json({ success: false, message: err.message });
   }

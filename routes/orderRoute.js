@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { 
-  placeOrder, 
-  updateOrderStatus, 
-  getMyOrders 
+const {
+  placeOrder,
+  updateOrderStatus,
+  getMyOrders
 } = require("../controllers/orderController");
 
 const { isLoggedin } = require("../middleware/isLoggedin");

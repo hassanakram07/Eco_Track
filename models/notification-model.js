@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const notificationSchema = mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   title: { type: String, required: true },
   message: { type: String, required: true },
   type: { type: String }, // info, warning, alert

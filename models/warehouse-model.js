@@ -13,7 +13,7 @@ const warehouseSchema = mongoose.Schema({
     lastUpdated: { type: Date, default: Date.now }
   }],
   active: { type: Boolean, default: true },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   createdAt: { type: Date, default: Date.now },
 });
 

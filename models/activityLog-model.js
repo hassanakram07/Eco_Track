@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const activityLogSchema = mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   adminId: { type: mongoose.Schema.Types.ObjectId, ref: "admin" },
   action: { type: String, required: true }, // CREATE_REQUEST, LOGIN, UPDATE_PRODUCT
   details: { type: Object },

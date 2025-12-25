@@ -5,7 +5,7 @@ const couponSchema = mongoose.Schema({
   discountId: { type: mongoose.Schema.Types.ObjectId, ref: "discount" },
   usageLimit: { type: Number, default: 1 },
   usedCount: { type: Number, default: 0 },
-  assignedToUser: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  assignedToUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   validFrom: { type: Date },
   validUntil: { type: Date },
   active: { type: Boolean, default: true },

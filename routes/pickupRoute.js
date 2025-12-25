@@ -17,10 +17,11 @@ router.post(
   authorizeRoles("Customer", "Admin", "Manager"),
   createpickupRequest
 );
-router.get("/my", isLoggedin, authorizeRoles("Customer"), getMyPickups);
+router.get("/my", isLoggedin, authorizeRoles("Customer", "Admin", "Manager"), getMyPickups);
 
 router.get("/", isLoggedin, authorizeRoles("Admin", "Manager"), getAllPickups);
 router.patch("/assign/:id", isLoggedin, authorizeRoles("Admin"), assignCollector);
+router.patch("/admin/:id", isLoggedin, authorizeRoles("Admin", "Manager"), require("../controllers/pickupController").adminProcessPickup);
 
 router.put(
   "/status/:id",

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/generateToken");
 // 1. Session Controller se function import kiya
-const { createSession } = require("./sessionController"); 
+const { createSession } = require("./sessionController");
 const { createLog } = require("../controllers/logController");
 
 
@@ -50,11 +50,11 @@ exports.registerUser = async (req, res) => {
       message: "User Registered Successfully",
       data: user,
     });
-   } catch (err) {
-    await createLog("ERROR", err.message, "User Module", { 
-      stack: err.stack, 
-      inputData: req.body, 
-      user: req.user ? req.user._id : "Guest" 
+  } catch (err) {
+    await createLog("ERROR", err.message, "User Module", {
+      stack: err.stack,
+      inputData: req.body,
+      user: req.user ? req.user._id : "Guest"
     });
     console.error("Register Error:", err);
     res.status(500).json({ success: false, message: "Server error during registration" });
@@ -65,14 +65,14 @@ exports.loginUser = async (req, res) => {
   try {
     let { email, password } = req.body;
     let user = await userModel.findOne({ email });
-    
+
     if (!user)
       return res
         .status(401)
         .json({ success: false, message: "User Not Found" });
 
     let isMatch = await bcrypt.compare(password, user.password);
-    
+
     if (isMatch) {
       // 2. Token generate karein
       let token = generateToken(user);
@@ -85,32 +85,33 @@ exports.loginUser = async (req, res) => {
         ipAddress: req.ip || req.headers['x-forwarded-for'] || "127.0.0.1",
         userAgent: req.headers["user-agent"],
         // Session 24 ghante baad expire hoga
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), 
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         deviceInfo: {
           browser: req.headers["user-agent"],
           platform: req.headers["sec-ch-ua-platform"] || "Unknown Device"
         }
       });
 
-      res.cookie("token", token, { 
+      res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Production mein secure cookie
-        maxAge: 24 * 60 * 60 * 1000 
+        maxAge: 24 * 60 * 60 * 1000
       });
 
-      res.status(200).json({ 
-        success: true, 
+      res.status(200).json({
+        success: true,
         message: "User Login Successfully",
-        token // Token bhi bhej diya taake frontend handle kar sakay
+        token,
+        user
       });
     } else {
       res.status(400).json({ success: false, message: "Invalid Email or Password" });
     }
-    } catch (err) {
-    await createLog("ERROR", err.message, "User Module", { 
-      stack: err.stack, 
-      inputData: req.body, 
-      user: req.user ? req.user._id : "Guest" 
+  } catch (err) {
+    await createLog("ERROR", err.message, "User Module", {
+      stack: err.stack,
+      inputData: req.body,
+      user: req.user ? req.user._id : "Guest"
     });
     console.error("Login Error:", err);
     res.status(500).json({ success: false, message: err.message });

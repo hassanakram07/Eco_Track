@@ -24,7 +24,7 @@ const pickupRequestSchema = new mongoose.Schema({
   preferredDate: { type: Date, required: true },
   status: {
     type: String,
-    enum: ["Pending", "Assigned", "In Progress", "Completed", "Cancelled"],
+    enum: ["Pending", "Accepted", "Rejected", "Assigned", "In Progress", "Completed", "Cancelled"],
     default: "Pending",
   },
   assignedCollector: { // Used by frontend
@@ -37,9 +37,24 @@ const pickupRequestSchema = new mongoose.Schema({
   assignedDriverName: { type: String },
   assignedVehicleId: { type: String },
 
-  collectedWeight: { type: Number },
   photo: { type: String },
   notes: { type: String },
+
+  // Buying Flow Fields
+  paymentMethod: {
+    type: String,
+    enum: ["Cash", "JazzCash", "EasyPaisa"],
+    default: "Cash"
+  },
+  paymentDetails: {
+    accountName: { type: String },
+    accountNumber: { type: String } // Mobile number or bank acc
+  },
+
+  // Admin Scheduling
+  scheduledTime: { type: Date },
+  adminResponse: { type: String }, // Rejection reason
+
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

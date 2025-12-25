@@ -21,6 +21,10 @@ exports.createpickupRequest = async (req, res) => {
       notes,
     } = req.body;
 
+    // DEBUG LOG
+    console.log("DEBUG: createpickupRequest Hit. Body:", req.body);
+    console.log("DEBUG: User ID:", req.user ? req.user._id : "No User");
+
     // 2. Strict Mapping for Schema Requirements
     const validMaterialTypes = ["Plastic", "Paper", "Glass", "Metal", "E-Waste", "Other"];
 
@@ -47,8 +51,11 @@ exports.createpickupRequest = async (req, res) => {
       estimatedWeight: finalQuantity,
 
       unit: unit || 'kg',
-      pickupAddress: pickupAddress || 'Depot Drop-off', // Required field default
-      preferredDate: preferredDate || Date.now(),       // Required field default
+      pickupAddress: pickupAddress || 'Depot Drop-off',
+      preferredDate: preferredDate || Date.now(),
+
+      paymentMethod: req.body.paymentMethod || "Cash",
+      paymentDetails: req.body.paymentDetails || {},
 
       notes,
       assignedDriverName: 'Unassigned',
@@ -101,8 +108,9 @@ exports.getAllPickups = async (req, res) => {
   try {
     const pickups = await pickupRequestModel
       .find()
-      .populate("userId", "firstName email")
+      .populate("userId", "firstName lastName email phone")
       .populate("assignedCollector", "firstName email role");
+    console.log("DEBUG: GetAllPickups Hit. Found:", pickups.length, "documents");
     res
       .status(200)
       .json({ success: true, count: pickups.length, data: pickups });
@@ -186,6 +194,45 @@ exports.updatePickupStatus = async (req, res) => {
       inputData: req.body,
       user: req.user ? req.user._id : "Guest"
     });
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.adminProcessPickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, scheduledTime, driverName, rejectionReason } = req.body;
+
+    const updateData = {
+      status,
+      updatedAt: Date.now()
+    };
+
+    if (status === 'Accepted') {
+      if (scheduledTime) updateData.scheduledTime = scheduledTime;
+      // Optional: Assign driver here if passed
+      if (driverName) updateData.assignedDriverName = driverName;
+    }
+
+    if (status === 'Rejected') {
+      updateData.adminResponse = rejectionReason;
+    }
+
+    const pickup = await pickupRequestModel.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
+    );
+
+    if (!pickup) return res.status(404).json({ success: false, message: "Pickup not found" });
+
+    res.status(200).json({
+      success: true,
+      message: `Pickup ${status}`,
+      data: pickup,
+    });
+  } catch (err) {
+    await createLog("ERROR", err.message, "Pickup Module", { stack: err.stack, userId: req.user?._id });
     res.status(500).json({ success: false, message: err.message });
   }
 };

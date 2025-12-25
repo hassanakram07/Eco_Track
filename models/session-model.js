@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const sessionSchema = mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   jwtToken: { type: String, required: true },
   ipAddress: { type: String },
   userAgent: { type: String },

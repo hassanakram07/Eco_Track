@@ -2,7 +2,13 @@ const cookieParser = require("cookie-parser");
 const express = require("express");
 const app = express();
 const cors = require("cors");
-app.use(cors());
+const corsOptions = {
+  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -55,6 +61,7 @@ const sectionRoute = require("./routes/sectionRoute");
 require("dotenv").config();
 app.use("/api/auth", userRoute);
 app.use("/api/pickups", pickupRoute);
+app.use("/api/products", require("./routes/productRoute"));
 app.use("/api/inventory", inventoryRoute)
 app.use("/api/brands", brandRoute);
 app.use("/api/logs", activityRoute);

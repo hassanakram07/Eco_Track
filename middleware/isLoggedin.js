@@ -18,15 +18,15 @@ const isLoggedin = async (req, res, next) => {
 
     // 2. JWT Token ko verify karna
     const decoded = jwt.verify(token, process.env.JWT_KEY);
-    
+
     // ⭐️ 3. SESSION CHECK (Security Layer)
     // Hum database mein check kar rahe hain ke kahin ye session block (revoke) toh nahi kar diya gaya
     const activeSession = await sessionModel.findOne({ jwtToken: token, revoked: false });
-    
+
     if (!activeSession) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "Session has been revoked or expired. Please login again." 
+      return res.status(401).json({
+        success: false,
+        message: "Session has been revoked or expired. Please login again."
       });
     }
 
@@ -38,7 +38,8 @@ const isLoggedin = async (req, res, next) => {
     }
 
     // Request object mein user set karna taake aage controllers use kar saken
-    req.user = user; 
+    req.user = user;
+    // console.log("DEBUG: Auth Middleware Success. User:", user.email, "Role:", user.role);
     return next();
   } catch (err) {
     console.error("Auth middleware error:", err);
@@ -55,11 +56,11 @@ const authorizePermissions = (requiredPermission) => {
       }
 
       const userRole = await roleModel.findOne({ name: req.user.role });
-      
+
       if (!userRole || !userRole.permissions.includes(requiredPermission)) {
-        return res.status(403).json({ 
-          success: false, 
-          message: `Forbidden: You do not have '${requiredPermission}' permission.` 
+        return res.status(403).json({
+          success: false,
+          message: `Forbidden: You do not have '${requiredPermission}' permission.`
         });
       }
       next();

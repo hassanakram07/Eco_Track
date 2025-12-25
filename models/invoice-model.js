@@ -4,7 +4,7 @@ const invoiceSchema = mongoose.Schema({
   invoiceNumber: { type: String, unique: true },
   requestId: { type: mongoose.Schema.Types.ObjectId, ref: "request" },
   orderId: { type: mongoose.Schema.Types.ObjectId, ref: "order" },
-  customerId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  customerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   billedTo: { type: Object }, // snapshot of billing address
   items: [{ type: mongoose.Schema.Types.ObjectId, ref: "invoiceItem" }],
   subTotal: { type: Number },

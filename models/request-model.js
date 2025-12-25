@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const requestSchema = mongoose.Schema({
   requestNumber: { type: String, unique: true }, // e.g. REQ-2025-0001
-  customerId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
+  customerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   materialId: { type: mongoose.Schema.Types.ObjectId, ref: "material", required: true },
   materialName: { type: String }, // denormalized
   quantity: { type: Number, required: true },
